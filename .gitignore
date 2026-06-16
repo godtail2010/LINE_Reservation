@@ -1,1 +1,6 @@
+node_modules
+.next
 .vercel
+*.db
+*.db-journal
+.DS_Store
