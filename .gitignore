@@ -2,5 +2,6 @@ node_modules
 .next
 .vercel
 *.db
+!dev.db
 *.db-journal
 .DS_Store
