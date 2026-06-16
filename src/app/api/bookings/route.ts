@@ -65,14 +65,41 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // 2. Resolve booking time
+    // 2. Resolve booking time and day of week
     const bookingDate = new Date(dateTime);
+    
+    // Get JST day of week
+    const jstDateStr = bookingDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Tokyo' });
+    const [year, month, day] = jstDateStr.split('-').map(Number);
+    const utcDate = new Date(Date.UTC(year, month - 1, day));
+    const dayOfWeek = utcDate.getUTCDay().toString(); // "0" (Sun) to "6" (Sat)
 
-    // 3. Double booking check (same staff at the same time)
-    if (staffId) {
+    // Fetch active staff
+    const activeStaff = await prisma.staff.findMany({
+      where: { isActive: true },
+    });
+
+    let assignedStaffId = staffId || null;
+
+    if (assignedStaffId) {
+      // Specific staff selected
+      const targetStaff = activeStaff.find((st) => st.id === assignedStaffId);
+      if (!targetStaff) {
+        return NextResponse.json({ error: 'スタイリストが見つかりません。' }, { status: 404 });
+      }
+
+      // Check if target stylist is working on this day of the week
+      if (!targetStaff.workingDays.split(',').includes(dayOfWeek)) {
+        return NextResponse.json(
+          { error: `${targetStaff.name}は選択された曜日は出勤日ではありません。` },
+          { status: 400 }
+        );
+      }
+
+      // Double booking check (same staff at the same time)
       const conflict = await prisma.booking.findFirst({
         where: {
-          staffId,
+          staffId: assignedStaffId,
           dateTime: bookingDate,
           status: 'CONFIRMED',
         },
@@ -84,6 +111,47 @@ export async function POST(request: Request) {
           { status: 409 }
         );
       }
+    } else {
+      // "No preference" (指名なし)
+      // Find active staff working on this day of the week
+      const workingStaff = activeStaff.filter((st) =>
+        st.workingDays.split(',').includes(dayOfWeek)
+      );
+
+      if (workingStaff.length === 0) {
+        return NextResponse.json(
+          { error: '指定された日付は出勤しているスタイリストがおりません。' },
+          { status: 400 }
+        );
+      }
+
+      // Find all confirmed bookings at this specific dateTime for these working staff members
+      const existingBookings = await prisma.booking.findMany({
+        where: {
+          staffId: {
+            in: workingStaff.map((st) => st.id),
+          },
+          dateTime: bookingDate,
+          status: 'CONFIRMED',
+        },
+        select: {
+          staffId: true,
+        },
+      });
+
+      const bookedStaffIds = new Set(existingBookings.map((b) => b.staffId));
+
+      // Find the first working staff member who is free
+      const freeStaff = workingStaff.find((st) => !bookedStaffIds.has(st.id));
+
+      if (!freeStaff) {
+        return NextResponse.json(
+          { error: '指定された日時はすでにすべてのスタイリストが予約で埋まっています。' },
+          { status: 409 }
+        );
+      }
+
+      assignedStaffId = freeStaff.id;
     }
 
     // 4. Create the booking
@@ -91,7 +159,7 @@ export async function POST(request: Request) {
       data: {
         userId: user.id,
         serviceId,
-        staffId: staffId || null,
+        staffId: assignedStaffId,
         dateTime: bookingDate,
         status: 'CONFIRMED',
         notes: notes || null,
@@ -119,7 +187,7 @@ export async function POST(request: Request) {
     const stylistName = booking.staff ? booking.staff.name : '指名なし';
 
     const messageText = 
-`【AURA Hair Salon】
+`【mia mio】
 ご予約が確定しました！✨
 
 ■日時: ${formattedDate} ${formattedTime}～

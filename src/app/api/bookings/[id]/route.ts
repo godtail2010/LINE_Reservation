@@ -41,7 +41,7 @@ export async function PATCH(
       });
 
       const messageText = 
-`【AURA Hair Salon】
+`【mia mio】
 予約キャンセルのお知らせ。
 
 以下のお客様のご予約がキャンセルされました。

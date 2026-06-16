@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { AdminLayout } from '@/components/AdminLayout';
-import { Users, Plus, RefreshCw, AlertCircle, Loader2 } from 'lucide-react';
+import { Users, Plus, RefreshCw, AlertCircle, Loader2, Trash2 } from 'lucide-react';
 
 interface Staff {
   id: string;
@@ -110,6 +110,27 @@ export default function AdminStaff() {
     }
   };
 
+  const handleDeleteStaff = async (id: string, name: string) => {
+    if (!window.confirm(`「${name}」を削除してもよろしいですか？\n※登録済みの既存のご予約は削除されません。`)) {
+      return;
+    }
+
+    setErrorMsg('');
+    try {
+      const res = await fetch(`/api/staff/${id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        await fetchStaff();
+      } else {
+        setErrorMsg(data.error || 'スタッフの削除に失敗しました。');
+      }
+    } catch (e) {
+      setErrorMsg('削除処理中にエラーが発生しました。');
+    }
+  };
+
   const formatWorkingDays = (daysStr: string) => {
     const days = daysStr.split(',');
     const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
@@ -173,6 +194,29 @@ export default function AdminStaff() {
                       <span style={{ fontWeight: 600 }}>出勤日:</span>
                       <span>{formatWorkingDays(st.workingDays)}</span>
                     </div>
+                  </div>
+
+                  <div>
+                    <button
+                      onClick={() => handleDeleteStaff(st.id, st.name)}
+                      className="btn btn-secondary"
+                      style={{
+                        padding: '8px',
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'var(--error)',
+                        borderColor: 'rgba(239, 68, 68, 0.2)',
+                        background: 'rgba(239, 68, 68, 0.05)',
+                        cursor: 'pointer',
+                      }}
+                      title="削除"
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 </div>
               ))}

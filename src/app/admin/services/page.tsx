@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { AdminLayout } from '@/components/AdminLayout';
-import { Clock, Plus, RefreshCw, AlertCircle, Loader2 } from 'lucide-react';
+import { Clock, Plus, RefreshCw, AlertCircle, Loader2, Trash2 } from 'lucide-react';
 
 interface Service {
   id: string;
@@ -85,6 +85,27 @@ export default function AdminServices() {
     }
   };
 
+  const handleDeleteService = async (id: string, name: string) => {
+    if (!window.confirm(`「${name}」を削除してもよろしいですか？\n※登録済みの既存のご予約は削除されません。`)) {
+      return;
+    }
+
+    setErrorMsg('');
+    try {
+      const res = await fetch(`/api/services/${id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        await fetchServices();
+      } else {
+        setErrorMsg(data.error || '施術メニューの削除に失敗しました。');
+      }
+    } catch (e) {
+      setErrorMsg('削除処理中にエラーが発生しました。');
+    }
+  };
+
   return (
     <AdminLayout>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
@@ -125,10 +146,32 @@ export default function AdminServices() {
                       </span>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right', marginLeft: '24px' }}>
-                    <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--secondary)' }}>
-                      ¥{service.price.toLocaleString()}
-                    </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginLeft: '24px' }}>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--secondary)' }}>
+                        ¥{service.price.toLocaleString()}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteService(service.id, service.name)}
+                      className="btn btn-secondary"
+                      style={{
+                        padding: '8px',
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'var(--error)',
+                        borderColor: 'rgba(239, 68, 68, 0.2)',
+                        background: 'rgba(239, 68, 68, 0.05)',
+                        cursor: 'pointer',
+                      }}
+                      title="削除"
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 </div>
               ))}

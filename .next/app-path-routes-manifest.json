@@ -1,0 +1,19 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/admin/page": "/admin",
+  "/admin/services/page": "/admin/services",
+  "/admin/staff/page": "/admin/staff",
+  "/api/bookings/[id]/route": "/api/bookings/[id]",
+  "/api/bookings/busy-slots/route": "/api/bookings/busy-slots",
+  "/api/bookings/route": "/api/bookings",
+  "/api/line/webhook/route": "/api/line/webhook",
+  "/api/services/[id]/route": "/api/services/[id]",
+  "/api/services/route": "/api/services",
+  "/api/staff/[id]/route": "/api/staff/[id]",
+  "/api/staff/route": "/api/staff",
+  "/api/users/sync/route": "/api/users/sync",
+  "/favicon.ico/route": "/favicon.ico",
+  "/my-bookings/page": "/my-bookings",
+  "/page": "/"
+}
