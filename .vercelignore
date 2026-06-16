@@ -1,0 +1,5 @@
+node_modules
+.next
+.vercel
+*.db-journal
+.DS_Store
