@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { CalendarRange, ClipboardList, Users, Settings, LogOut } from 'lucide-react';
+import { CalendarRange, ClipboardList, Users, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 

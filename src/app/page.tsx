@@ -11,8 +11,6 @@ import {
   User, 
   Info, 
   CheckCircle, 
-  ChevronLeft, 
-  MessageSquare,
   AlertTriangle,
   Loader2 
 } from 'lucide-react';
@@ -41,7 +39,7 @@ const TIME_SLOTS = [
 ];
 
 export default function BookingWizard() {
-  const { profile, loading: liffLoading, login } = useLiff();
+  const { profile, login } = useLiff();
   
   // Wizard steps
   const [step, setStep] = useState(1);
@@ -155,8 +153,6 @@ export default function BookingWizard() {
     setErrorMsg('');
     
     const yyyy = selectedDate.getFullYear();
-    const mm = (selectedDate.getMonth() + 1).toString().padStart(2, '0');
-    const dd = selectedDate.getDate().toString().padStart(2, '0');
     const timeParts = selectedTime.split(':');
     
     // Create combined booking Date object
@@ -187,7 +183,7 @@ export default function BookingWizard() {
       } else {
         setErrorMsg(data.error || '予約の登録に失敗しました。もう一度お試しください。');
       }
-    } catch (e) {
+    } catch {
       setErrorMsg('通信エラーが発生しました。ネットワーク環境をご確認ください。');
     } finally {
       setBookingInProgress(false);

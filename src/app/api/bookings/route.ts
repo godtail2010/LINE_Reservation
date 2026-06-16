@@ -41,7 +41,7 @@ export async function GET(request: Request) {
     }
 
     return NextResponse.json({ success: true, bookings });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching bookings:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
@@ -201,7 +201,7 @@ export async function POST(request: Request) {
     await sendLineMessage(lineUserId, messageText);
 
     return NextResponse.json({ success: true, booking });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating booking:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

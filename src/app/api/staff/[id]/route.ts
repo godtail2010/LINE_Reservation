@@ -14,7 +14,7 @@ export async function DELETE(
     });
 
     return NextResponse.json({ success: true, staffMember });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting staff member:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { AdminLayout } from '@/components/AdminLayout';
-import { Users, Plus, RefreshCw, AlertCircle, Loader2, Trash2 } from 'lucide-react';
+import { Plus, AlertCircle, Loader2, Trash2 } from 'lucide-react';
 
 interface Staff {
   id: string;
@@ -52,7 +52,7 @@ export default function AdminStaff() {
   };
 
   useEffect(() => {
-    fetchStaff();
+    void Promise.resolve().then(fetchStaff);
   }, []);
 
   const handleDayToggle = (dayValue: string) => {
@@ -103,7 +103,7 @@ export default function AdminStaff() {
       } else {
         setErrorMsg(data.error || 'スタッフの追加に失敗しました。');
       }
-    } catch (e) {
+    } catch {
       setErrorMsg('エラーが発生しました。');
     } finally {
       setAdding(false);
@@ -126,7 +126,7 @@ export default function AdminStaff() {
       } else {
         setErrorMsg(data.error || 'スタッフの削除に失敗しました。');
       }
-    } catch (e) {
+    } catch {
       setErrorMsg('削除処理中にエラーが発生しました。');
     }
   };

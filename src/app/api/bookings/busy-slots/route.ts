@@ -125,7 +125,7 @@ export async function GET(request: Request) {
     }
 
     return NextResponse.json({ success: true, busySlots });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching busy slots:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

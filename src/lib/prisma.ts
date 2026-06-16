@@ -14,7 +14,7 @@ export const prisma =
     // We copy our seeded dev.db to /tmp/dev.db during function startup to allow write operations.
     if (process.env.VERCEL) {
       const tempDbPath = '/tmp/dev.db';
-      const bundledDbPath = path.resolve(process.cwd(), 'dev.db');
+      const bundledDbPath = path.resolve(/* turbopackIgnore: true */ process.cwd(), 'dev.db');
       
       try {
         if (!fs.existsSync(tempDbPath) && fs.existsSync(bundledDbPath)) {
@@ -34,7 +34,7 @@ export const prisma =
       // If path is already absolute (like /tmp/dev.db), resolve directly.
       const absoluteDbPath = relativePath.startsWith('/')
         ? relativePath
-        : path.resolve(process.cwd(), relativePath);
+        : path.resolve(/* turbopackIgnore: true */ process.cwd(), relativePath);
       resolvedUrl = `file:${absoluteDbPath}`;
     }
     

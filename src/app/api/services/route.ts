@@ -8,7 +8,7 @@ export async function GET() {
       orderBy: { price: 'asc' },
     });
     return NextResponse.json({ success: true, services });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching services:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ success: true, service });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating service:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

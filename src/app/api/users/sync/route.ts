@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ success: true, user });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in user sync API:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }

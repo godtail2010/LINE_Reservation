@@ -49,7 +49,7 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    fetchBookings();
+    void Promise.resolve().then(fetchBookings);
   }, []);
 
   const handleUpdateStatus = async (bookingId: string, newStatus: string) => {
@@ -73,7 +73,7 @@ export default function AdminDashboard() {
       } else {
         setErrorMsg(data.error || 'ステータスの更新に失敗しました。');
       }
-    } catch (e) {
+    } catch {
       setErrorMsg('エラーが発生しました。');
     } finally {
       setUpdatingId(null);

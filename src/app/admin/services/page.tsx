@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { AdminLayout } from '@/components/AdminLayout';
-import { Clock, Plus, RefreshCw, AlertCircle, Loader2, Trash2 } from 'lucide-react';
+import { Clock, Plus, AlertCircle, Loader2, Trash2 } from 'lucide-react';
 
 interface Service {
   id: string;
@@ -42,7 +42,7 @@ export default function AdminServices() {
   };
 
   useEffect(() => {
-    fetchServices();
+    void Promise.resolve().then(fetchServices);
   }, []);
 
   const handleAddService = async (e: React.FormEvent) => {
@@ -78,7 +78,7 @@ export default function AdminServices() {
       } else {
         setErrorMsg(data.error || '施術メニューの追加に失敗しました。');
       }
-    } catch (e) {
+    } catch {
       setErrorMsg('エラーが発生しました。');
     } finally {
       setAdding(false);
@@ -101,7 +101,7 @@ export default function AdminServices() {
       } else {
         setErrorMsg(data.error || '施術メニューの削除に失敗しました。');
       }
-    } catch (e) {
+    } catch {
       setErrorMsg('削除処理中にエラーが発生しました。');
     }
   };

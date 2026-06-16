@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLiff } from '@/lib/liffContext';
 import { CustomerLayout } from '@/components/CustomerLayout';
-import { Clock, Calendar, AlertTriangle, AlertCircle, Trash2, Check, Loader2 } from 'lucide-react';
+import { Clock, Calendar, AlertCircle, Trash2, Check, Loader2 } from 'lucide-react';
 
 interface Booking {
   id: string;
@@ -28,7 +28,7 @@ export default function MyBookings() {
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     if (!profile) return;
     setLoadingBookings(true);
     setErrorMsg('');
@@ -44,13 +44,13 @@ export default function MyBookings() {
     } finally {
       setLoadingBookings(false);
     }
-  };
+  }, [profile]);
 
   useEffect(() => {
     if (profile) {
-      fetchBookings();
+      void Promise.resolve().then(fetchBookings);
     }
-  }, [profile]);
+  }, [fetchBookings, profile]);
 
   const handleCancelBooking = async (bookingId: string) => {
     if (!confirm('本当にこのご予約をキャンセルしますか？')) return;
@@ -73,7 +73,7 @@ export default function MyBookings() {
       } else {
         setErrorMsg(data.error || '予約のキャンセルに失敗しました。');
       }
-    } catch (e) {
+    } catch {
       setErrorMsg('通信エラーが発生しました。');
     } finally {
       setCancellingId(null);

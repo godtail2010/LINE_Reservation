@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import type { Liff } from '@line/liff';
 
 export interface LiffProfile {
   userId: string;
@@ -10,7 +11,7 @@ export interface LiffProfile {
 }
 
 interface LiffContextType {
-  liff: any;
+  liff: Liff | null;
   profile: LiffProfile | null;
   loading: boolean;
   isMock: boolean;
@@ -29,12 +30,39 @@ const LiffContext = createContext<LiffContextType>({
 
 export const useLiff = () => useContext(LiffContext);
 
+const syncUserProfile = async (user: LiffProfile) => {
+  try {
+    await fetch('/api/users/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(user),
+    });
+  } catch (e) {
+    console.error('Failed to sync user profile with backend db:', e);
+  }
+};
+
 export const LiffProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [liffInstance, setLiffInstance] = useState<any>(null);
+  const [liffInstance, setLiffInstance] = useState<Liff | null>(null);
   const [profile, setProfile] = useState<LiffProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isMock, setIsMock] = useState(true);
   const [showMockLogin, setShowMockLogin] = useState(false);
+
+  const setupMockUser = () => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('mock_liff_user');
+      if (stored) {
+        try {
+          const user = JSON.parse(stored) as LiffProfile;
+          setProfile(user);
+          syncUserProfile(user);
+        } catch {
+          localStorage.removeItem('mock_liff_user');
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     const initLiff = async () => {
@@ -52,7 +80,7 @@ export const LiffProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (liff.isLoggedIn()) {
             const userProfile = await liff.getProfile();
             setProfile(userProfile);
-            
+
             // Sync user profile to backend db
             await syncUserProfile(userProfile);
           } else {
@@ -75,33 +103,6 @@ export const LiffProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     initLiff();
   }, []);
-
-  const setupMockUser = () => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('mock_liff_user');
-      if (stored) {
-        try {
-          const user = JSON.parse(stored);
-          setProfile(user);
-          syncUserProfile(user);
-        } catch (e) {
-          localStorage.removeItem('mock_liff_user');
-        }
-      }
-    }
-  };
-
-  const syncUserProfile = async (user: LiffProfile) => {
-    try {
-      await fetch('/api/users/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user),
-      });
-    } catch (e) {
-      console.error('Failed to sync user profile with backend db:', e);
-    }
-  };
 
   const login = (mockUser?: LiffProfile) => {
     if (!isMock && liffInstance) {

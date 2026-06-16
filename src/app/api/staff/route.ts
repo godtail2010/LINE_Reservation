@@ -7,7 +7,7 @@ export async function GET() {
       where: { isActive: true },
     });
     return NextResponse.json({ success: true, staff });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching staff:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ success: true, staffMember });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating staff member:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
