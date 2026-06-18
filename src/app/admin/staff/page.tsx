@@ -38,10 +38,12 @@ export default function AdminStaff() {
     setLoading(true);
     setErrorMsg('');
     try {
-      const res = await fetch('/api/staff');
+      const res = await fetch('/api/staff', { cache: 'no-store' });
       const data = await res.json();
       if (data.success) {
         setStaff(data.staff);
+      } else {
+        setErrorMsg(data.error || 'スタッフ情報の取得に失敗しました。');
       }
     } catch (e) {
       console.error('Failed to fetch staff:', e);
@@ -81,6 +83,7 @@ export default function AdminStaff() {
       const res = await fetch('/api/staff', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({
           name,
           role,

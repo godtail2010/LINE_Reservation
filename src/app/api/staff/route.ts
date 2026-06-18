@@ -1,12 +1,21 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const staff = await prisma.staff.findMany({
       where: { isActive: true },
     });
-    return NextResponse.json({ success: true, staff });
+    return NextResponse.json(
+      { success: true, staff },
+      {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0',
+        },
+      }
+    );
   } catch (error: unknown) {
     console.error('Error fetching staff:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
@@ -31,7 +40,15 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ success: true, staffMember });
+    return NextResponse.json(
+      { success: true, staffMember },
+      {
+        status: 201,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0',
+        },
+      }
+    );
   } catch (error: unknown) {
     console.error('Error creating staff member:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

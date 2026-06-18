@@ -2,6 +2,18 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+Create a PostgreSQL database and set `DATABASE_URL` before starting the app:
+
+```bash
+cp .env.example .env.local
+# Edit .env.local and set DATABASE_URL to your PostgreSQL connection string.
+npm run db:deploy
+npm run db:seed
+```
+
+For Vercel, add the same `DATABASE_URL` in Project Settings → Environment Variables.
+Deploys run `npm run db:deploy` before `npm run build`.
+
 First, run the development server:
 
 ```bash
