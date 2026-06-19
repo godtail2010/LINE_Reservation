@@ -5,3 +5,4 @@ node_modules
 !dev.db
 *.db-journal
 .DS_Store
+.env*.local
